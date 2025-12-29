@@ -88,3 +88,62 @@ export const studentController = async (req, res) => {
         });
     }
 }
+
+export const updateStudent = async (req, res) => {
+        try {
+            const studentId = req.params.id;
+            if(!studentId) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Student not found with this Id"
+                });
+            }
+
+            const { name, rollNo, fees, grade, medium} = req.body;
+            const data = await mySqlPool.query(`UPDATE students SET name = ?, rollNo = ?, fees = ?, grade = ?, medium = ? WHERE id = ?`, [name, rollNo, fees, grade, medium, studentId]);
+            if(!data) {
+                return res.status(404).json({
+                    success: false,
+                    message: "data not found"
+                });
+            }
+            return res.status(200).json({
+                success: true,
+                updateUser: data
+            })
+    } catch (error) {
+        console.log("failed to update user, server error");
+        return res.status(500).json({
+            message: "Server error, faild to update usere",
+            error: error.message
+        });
+    }
+}
+
+export const deleteStudent = async (req, res) => {
+    try {
+        const studentId = req.params.id;
+        if(!studentId) {
+            return res.status(404).json({
+                message: "data not found"
+            });
+        }
+        const user = await mySqlPool.query(`DELETE FROM students WHERE id = ?`, [studentId]);
+        if(!user) {
+            return res.status(404).json({
+                message: "user not found, Failed to delete",
+                success: false
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Student deleted successfully",
+        })
+
+    } catch (error) {
+        console.log("Failed to delete error");
+        return res.status(500).json({
+            message: "failed to delete user"
+        })    }
+}
