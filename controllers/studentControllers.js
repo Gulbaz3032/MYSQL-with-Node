@@ -100,6 +100,12 @@ export const updateStudent = async (req, res) => {
             }
 
             const { name, rollNo, fees, grade, medium} = req.body;
+            if(!name || !rollNo || !fees || !grade || !medium) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'All fields are required'
+                });
+            }
             const data = await mySqlPool.query(`UPDATE students SET name = ?, rollNo = ?, fees = ?, grade = ?, medium = ? WHERE id = ?`, [name, rollNo, fees, grade, medium, studentId]);
             if(!data) {
                 return res.status(404).json({
@@ -125,7 +131,7 @@ export const deleteStudent = async (req, res) => {
         const studentId = req.params.id;
         if(!studentId) {
             return res.status(404).json({
-                message: "data not found"
+                message: "userId not found"
             });
         }
         const user = await mySqlPool.query(`DELETE FROM students WHERE id = ?`, [studentId]);
